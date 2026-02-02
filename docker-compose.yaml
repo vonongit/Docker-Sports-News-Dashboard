@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sports_backend
+    ports:
+      - "5000:5000"  # Access backend directly at localhost:5000 (for testing)
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sports_frontend
+    ports:
+      - "3000:80"  # Access frontend directly at localhost:3000 (for testing)
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine  # Use official nginx image (no custom Dockerfile needed)
+    container_name: nginx_proxy
+    ports:
+      - "80:80"  # Main entry point - http://localhost
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Mount our config file
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# Custom network so containers can talk to each other
+networks:
+  app-network:
+    driver: bridge
