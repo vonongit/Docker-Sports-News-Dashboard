@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports & News Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .refresh-btn {
+            background: white;
+            color: #1e3a8a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .vs {
+            font-weight: 600;
+            color: #666;
+            padding: 0 20px;
+        }
+
+        .game-status {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .weather-widget {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .temperature {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .news-item {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .news-source {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🏀 Sports & News Dashboard</h1>
+            <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Weather Section -->
+        <div class="section">
+            <h2 class="section-title">🌤️ Weather - Charlotte, NC</h2>
+            <div id="weather-content" class="loading">Loading weather...</div>
+        </div>
+
+        <!-- NBA Section -->
+        <div class="section">
+            <h2 class="section-title">🏀 NBA Scores</h2>
+            <div id="nba-content" class="loading">Loading NBA scores...</div>
+        </div>
+
+        <!-- NFL Section -->
+        <div class="section">
+            <h2 class="section-title">🏈 NFL Scores</h2>
+            <div id="nfl-content" class="loading">Loading NFL scores...</div>
+        </div>
+
+        <!-- News Section -->
+        <div class="section">
+            <h2 class="section-title">📰 Top Headlines</h2>
+            <div id="news-content" class="loading">Loading news...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+
+        async function loadWeather() {
+            try {
+                const response = await fetch(`${API_URL}/weather`);
+                const data = await response.json();
+                
+                const weatherHTML = `
+                    <div class="weather-widget">
+                        <div class="weather-main">
+                            <div class="temperature">${data.temperature}°F</div>
+                            <div class="weather-details">
+                                <div style="font-size: 1.2rem; font-weight: 600;">${data.description}</div>
+                                <div>Feels like ${data.feels_like}°F</div>
+                                <div>Humidity: ${data.humidity}%</div>
+                                <div>Wind: ${data.wind_speed} mph</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('weather-content').innerHTML = weatherHTML;
+            } catch (error) {
+                document.getElementById('weather-content').innerHTML = 
+                    '<div class="error">Failed to load weather data</div>';
+            }
+        }
+
+        async function loadNBAScores() {
+            try {
+                const response = await fetch(`${API_URL}/nba/scores`);
+                const games = await response.json();
+                
+                if (games.length === 0) {
+                    document.getElementById('nba-content').innerHTML = 
+                        '<div class="empty-state">No NBA games today</div>';
+                    return;
+                }
+                
+                const gamesHTML = games.map(game => `
+                    <div class="game-card">
+                        <div class="team">
+                            <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
+                            <span class="team-name">${game.away_team.name}</span>
+                        </div>
+                        <div class="score">${game.away_team.score}</div>
+                        <div class="vs">@</div>
+                        <div class="score">${game.home_team.score}</div>
+                        <div class="team">
+                            <span class="team-name">${game.home_team.name}</span>
+                            <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
+                        </div>
+                    </div>
+                    <div class="game-status">${game.status}</div>
+                `).join('');
+                
+                document.getElementById('nba-content').innerHTML = gamesHTML;
+            } catch (error) {
+                document.getElementById('nba-content').innerHTML = 
+                    '<div class="error">Failed to load NBA scores</div>';
+            }
+        }
+
+        async function loadNFLScores() {
+            try {
+                const response = await fetch(`${API_URL}/nfl/scores`);
+                const games = await response.json();
+                
+                if (games.length === 0) {
+                    document.getElementById('nfl-content').innerHTML = 
+                        '<div class="empty-state">No NFL games today</div>';
+                    return;
+                }
+                
+                const gamesHTML = games.map(game => `
+                    <div class="game-card">
+                        <div class="team">
+                            <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
+                            <span class="team-name">${game.away_team.name}</span>
+                        </div>
+                        <div class="score">${game.away_team.score}</div>
+                        <div class="vs">@</div>
+                        <div class="score">${game.home_team.score}</div>
+                        <div class="team">
+                            <span class="team-name">${game.home_team.name}</span>
+                            <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
+                        </div>
+                    </div>
+                    <div class="game-status">${game.status}</div>
+                `).join('');
+                
+                document.getElementById('nfl-content').innerHTML = gamesHTML;
+            } catch (error) {
+                document.getElementById('nfl-content').innerHTML = 
+                    '<div class="error">Failed to load NFL scores</div>';
+            }
+        }
+
+        async function loadNews() {
+            try {
+                const response = await fetch(`${API_URL}/news`);
+                const articles = await response.json();
+                
+                const newsHTML = articles.map(article => `
+                    <div class="news-item">
+                        <div class="news-title">${article.title}</div>
+                        <div class="news-source">${article.source}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('news-content').innerHTML = newsHTML;
+            } catch (error) {
+                document.getElementById('news-content').innerHTML = 
+                    '<div class="error">Failed to load news</div>';
+            }
+        }
+
+        function loadAllData() {
+            loadWeather();
+            loadNBAScores();
+            loadNFLScores();
+            loadNews();
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadAllData);
+
+        // Auto-refresh every 60 seconds
+        setInterval(loadAllData, 60000);
+    </script>
+</body>
+</html>
