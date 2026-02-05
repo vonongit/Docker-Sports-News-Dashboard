@@ -266,22 +266,36 @@
                     return;
                 }
                 
-                const gamesHTML = games.map(game => `
-                    <div class="game-card">
-                        <div class="team">
-                            <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
-                            <span class="team-name">${game.away_team.name}</span>
+                const gamesHTML = games.map(game => {
+                    // Format the date
+                    const gameDate = new Date(game.date);
+                    const formattedDate = gameDate.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    const formattedTime = gameDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+                    
+                    return `
+                        <div class="game-card">
+                            <div class="team">
+                                <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
+                                <span class="team-name">${game.away_team.name}</span>
+                            </div>
+                            <div class="score">${game.away_team.score}</div>
+                            <div class="vs">@</div>
+                            <div class="score">${game.home_team.score}</div>
+                            <div class="team">
+                                <span class="team-name">${game.home_team.name}</span>
+                                <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
+                            </div>
                         </div>
-                        <div class="score">${game.away_team.score}</div>
-                        <div class="vs">@</div>
-                        <div class="score">${game.home_team.score}</div>
-                        <div class="team">
-                            <span class="team-name">${game.home_team.name}</span>
-                            <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
-                        </div>
-                    </div>
-                    <div class="game-status">${game.status}</div>
-                `).join('');
+                        <div class="game-status">${game.status} • ${formattedDate} at ${formattedTime}</div>
+                    `;
+                }).join('');
                 
                 document.getElementById('nba-content').innerHTML = gamesHTML;
             } catch (error) {
@@ -301,22 +315,36 @@
                     return;
                 }
                 
-                const gamesHTML = games.map(game => `
-                    <div class="game-card">
-                        <div class="team">
-                            <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
-                            <span class="team-name">${game.away_team.name}</span>
+                const gamesHTML = games.map(game => {
+                    // Format the date
+                    const gameDate = new Date(game.date);
+                    const formattedDate = gameDate.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    const formattedTime = gameDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+                    
+                    return `
+                        <div class="game-card">
+                            <div class="team">
+                                <img src="${game.away_team.logo}" alt="${game.away_team.name}" class="team-logo">
+                                <span class="team-name">${game.away_team.name}</span>
+                            </div>
+                            <div class="score">${game.away_team.score}</div>
+                            <div class="vs">@</div>
+                            <div class="score">${game.home_team.score}</div>
+                            <div class="team">
+                                <span class="team-name">${game.home_team.name}</span>
+                                <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
+                            </div>
                         </div>
-                        <div class="score">${game.away_team.score}</div>
-                        <div class="vs">@</div>
-                        <div class="score">${game.home_team.score}</div>
-                        <div class="team">
-                            <span class="team-name">${game.home_team.name}</span>
-                            <img src="${game.home_team.logo}" alt="${game.home_team.name}" class="team-logo">
-                        </div>
-                    </div>
-                    <div class="game-status">${game.status}</div>
-                `).join('');
+                        <div class="game-status">${game.status} • ${formattedDate} at ${formattedTime}</div>
+                    `;
+                }).join('');
                 
                 document.getElementById('nfl-content').innerHTML = gamesHTML;
             } catch (error) {

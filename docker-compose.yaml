@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: sports_backend
     ports:
-      - "5000:5000"  # Access backend directly at localhost:5000 (for testing)
+      - "5001:5000"  # Access backend directly at localhost:5000 (for testing)
     networks:
       - app-network
     restart: unless-stopped
