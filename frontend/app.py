@@ -7,9 +7,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# API Keys (we'll use free tiers)
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY', 'demo')  # We'll get this later
-NEWS_API_KEY = os.getenv('NEWS_API_KEY', 'demo')  # We'll get this later
+# API Keys (Free)
+WEATHER_API_KEY = '7b177df298ef263a71fefd943ddacf9b'
+NEWS_API_KEY = '9a82e5983d38427d8e2f1cfb1d5f2a17'
 
 @app.route('/health', methods=['GET'])
 def health():
