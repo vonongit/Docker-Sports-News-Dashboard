@@ -839,4 +839,4 @@ This is a personal learning project, but suggestions are welcome!
 
 **Stepping stone to Kubernetes learning**
 
-*Last Updated: February 5, 2026*
+*Last Updated: February 10, 2026*
