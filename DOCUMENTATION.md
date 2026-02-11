@@ -701,8 +701,6 @@ Current NFL games with same features as NBA:
 
 Top 5 breaking news stories from NewsAPI:
 
-*(Headlines redacted due to sensitive topics)*
-
 ![live-news-dashboard](screenshots/live-news-dashboard.png)
 
 **Features:**
